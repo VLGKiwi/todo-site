@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/FooxyS/todo-service/internal/domain"
@@ -32,18 +33,18 @@ func (h *Handlers) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var todo domain.Todo
 
 	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
-		// TODO: add logging of error with slog
+		slog.Warn("failed to decode request", "error", err)
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
 
 	id, err := h.UseCase.CreateTodo(r.Context(), todo)
 	if errors.Is(err, domain.ErrNoTitle) {
-		// TODO: add log
+		slog.Warn("todo validation failed", "error", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	} else if err != nil {
-		// TODO: log
+		slog.Error("failed to create todo", "error", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -56,8 +57,10 @@ func (h *Handlers) CreateTodo(w http.ResponseWriter, r *http.Request) {
 
 	resp := map[string]int{"id": id}
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		// log
+		slog.Error("failed to write response", "error", err)
 	}
+
+	slog.Info("todo created", "id", id)
 }
 
 // TODO: implement other handlers
