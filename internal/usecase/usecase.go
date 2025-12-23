@@ -1,31 +1,39 @@
-package Todousecase
+package usecase
 
 import (
 	"fmt"
+
+	"context"
 
 	"github.com/FooxyS/todo-service/internal/domain"
 )
 
 type TodoRepository interface {
-	Save(domain.Todo) (int, error)
-	GetByID(id int) (domain.Todo, error)
-	UpdateByID(domain.Todo) error
-	DeleteByID(id int) error
-	ReadAll() []domain.Todo
+	Save(ctx context.Context, todo domain.Todo) (int, error)
+	GetByID(ctx context.Context, id int) (domain.Todo, error)
+	UpdateByID(ctx context.Context, todo domain.Todo) error
+	DeleteByID(ctx context.Context, id int) error
+	ReadAll(ctx context.Context) ([]domain.Todo, error)
 }
 
 type TodoUseCase struct {
-	todoRepo TodoRepository
+	TodoRepo TodoRepository
 }
 
-func (u *TodoUseCase) CreateTodo(todo domain.Todo) (int, error) {
+func New(repo TodoRepository) *TodoUseCase {
+	return &TodoUseCase{
+		TodoRepo: repo,
+	}
+}
+
+func (u *TodoUseCase) CreateTodo(ctx context.Context, todo domain.Todo) (int, error) {
 	// validate todo
 	if err := todo.Validate(); err != nil {
 		return 0, fmt.Errorf("validate todo: %w", err)
 	}
 
 	// save todo in db
-	id, err := u.todoRepo.Save(todo)
+	id, err := u.TodoRepo.Save(ctx, todo)
 	if err != nil {
 		return 0, fmt.Errorf("save todo in db: %w", err)
 	}
@@ -33,33 +41,33 @@ func (u *TodoUseCase) CreateTodo(todo domain.Todo) (int, error) {
 	return id, nil
 }
 
-func (u *TodoUseCase) GetAllTodos() []domain.Todo {
+func (u *TodoUseCase) GetAllTodos(ctx context.Context) ([]domain.Todo, error) {
 	// get all todos
-	return u.todoRepo.ReadAll()
+	return u.TodoRepo.ReadAll(ctx)
 }
 
-func (u *TodoUseCase) GetTodoByID(id int) (domain.Todo, error) {
-	todo, err := u.todoRepo.GetByID(id)
+func (u *TodoUseCase) GetTodoByID(ctx context.Context, id int) (domain.Todo, error) {
+	todo, err := u.TodoRepo.GetByID(ctx, id)
 	if err != nil {
 		return domain.Todo{}, fmt.Errorf("get todo by id: %w", err)
 	}
 	return todo, nil
 }
 
-func (u *TodoUseCase) UpdateTodoByID(todo domain.Todo) error {
+func (u *TodoUseCase) UpdateTodoByID(ctx context.Context, todo domain.Todo) error {
 	// validate todo
 	if err := todo.Validate(); err != nil {
 		return fmt.Errorf("validate todo: %w", err)
 	}
 
 	// update todo in db
-	if err := u.todoRepo.UpdateByID(todo); err != nil {
+	if err := u.TodoRepo.UpdateByID(ctx, todo); err != nil {
 		return fmt.Errorf("update todo in db: %w", err)
 	}
 
 	return nil
 }
 
-func (u *TodoUseCase) DeleteTodoByID(id int) error {
-	return u.todoRepo.DeleteByID(id)
+func (u *TodoUseCase) DeleteTodoByID(ctx context.Context, id int) error {
+	return u.TodoRepo.DeleteByID(ctx, id)
 }
