@@ -14,9 +14,9 @@ import (
 
 type UseCase interface {
 	CreateTodo(ctx context.Context, todo domain.Todo) (int, error)
-	GetAllTodos(ctx context.Context) []domain.Todo
+	GetAllTodos(ctx context.Context) ([]domain.Todo, error)
 	GetTodoByID(ctx context.Context, id int) (domain.Todo, error)
-	UpdateTodoByID(ctx context.Context, todo domain.Todo) error
+	UpdateTodoByID(ctx context.Context, id int, todo domain.Todo) error
 	DeleteTodoByID(ctx context.Context, id int) error
 }
 
