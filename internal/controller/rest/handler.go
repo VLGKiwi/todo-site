@@ -76,3 +76,33 @@ func (h *Handlers) GetAllTodosHandler(w http.ResponseWriter, r *http.Request) {
 		slog.Error("failed to encode response", "error", err)
 	}
 }
+
+func (h *Handlers) GetTodoHandler(w http.ResponseWriter, r *http.Request) {
+
+	idStr := r.PathValue("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		slog.Warn("failed to convert id from string", "error", err)
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	todo, err := h.UseCase.GetTodoByID(r.Context(), id)
+	if errors.Is(err, domain.ErrTodoNotExist) {
+		slog.Warn("failed to get todo by id", "error", err, "id", id)
+		http.Error(w, "todo not found", http.StatusNotFound)
+		return
+	} else if err != nil {
+		slog.Error("failed to get todo by id", "error", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(todo); err != nil {
+		slog.Error("failed to encode response", "error", err)
+	}
+
+}
