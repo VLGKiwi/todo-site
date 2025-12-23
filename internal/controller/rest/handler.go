@@ -146,3 +146,26 @@ func (h *Handlers) UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func (h *Handlers) DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		slog.Warn("failed to convert id from string", "error", err)
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.UseCase.DeleteTodoByID(r.Context(), id); errors.Is(err, domain.ErrTodoNotExist) {
+		slog.Warn("failed to get todo by id", "error", err, "id", id)
+		http.Error(w, "todo not found", http.StatusNotFound)
+		return
+	} else if err != nil {
+		slog.Error("failed to get todo by id", "error", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
