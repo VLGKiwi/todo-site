@@ -106,3 +106,43 @@ func (h *Handlers) GetTodoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func (h *Handlers) UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		slog.Warn("failed to convert id from string", "error", err)
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	var todo domain.Todo
+
+	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+		slog.Warn("failed to decode request", "error", err)
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.UseCase.UpdateTodoByID(r.Context(), id, todo); errors.Is(err, domain.ErrTodoNotExist) {
+		slog.Warn("failed to get todo by id", "error", err, "id", id)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	} else if errors.Is(err, domain.ErrNoTitle) {
+		slog.Warn("todo validation failed", "error", err)
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	} else if err != nil {
+		slog.Error("failed to get todo by id", "error", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	resp := map[string]string{"message": "todo successfully updated"}
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		slog.Error("failed to encode response", "error", err)
+	}
+
+}
