@@ -11,7 +11,7 @@ import (
 type TodoRepository interface {
 	Save(ctx context.Context, todo domain.Todo) (int, error)
 	GetByID(ctx context.Context, id int) (domain.Todo, error)
-	UpdateByID(ctx context.Context, todo domain.Todo) error
+	UpdateByID(ctx context.Context, id int, todo domain.Todo) error
 	DeleteByID(ctx context.Context, id int) error
 	ReadAll(ctx context.Context) ([]domain.Todo, error)
 }
@@ -29,6 +29,7 @@ func New(repo TodoRepository) *TodoUseCase {
 func (u *TodoUseCase) CreateTodo(ctx context.Context, todo domain.Todo) (int, error) {
 	// validate todo
 	if err := todo.Validate(); err != nil {
+		// TODO: change error message
 		return 0, fmt.Errorf("validate todo: %w", err)
 	}
 
@@ -54,14 +55,14 @@ func (u *TodoUseCase) GetTodoByID(ctx context.Context, id int) (domain.Todo, err
 	return todo, nil
 }
 
-func (u *TodoUseCase) UpdateTodoByID(ctx context.Context, todo domain.Todo) error {
+func (u *TodoUseCase) UpdateTodoByID(ctx context.Context, id int, todo domain.Todo) error {
 	// validate todo
 	if err := todo.Validate(); err != nil {
 		return fmt.Errorf("validate todo: %w", err)
 	}
 
 	// update todo in db
-	if err := u.TodoRepo.UpdateByID(ctx, todo); err != nil {
+	if err := u.TodoRepo.UpdateByID(ctx, id, todo); err != nil {
 		return fmt.Errorf("update todo in db: %w", err)
 	}
 
