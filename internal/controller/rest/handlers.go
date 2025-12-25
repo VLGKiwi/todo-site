@@ -42,7 +42,7 @@ func (h *Handlers) CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := h.UseCase.CreateTodo(r.Context(), todo)
 	if errors.Is(err, domain.ErrNoTitle) {
 		slog.Warn("todo validation failed", "error", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	} else if err != nil {
 		slog.Error("failed to create todo", "error", err)
