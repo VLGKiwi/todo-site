@@ -1,21 +1,16 @@
-# stage 1: build
-FROM golang:1.23.4-alpine AS build
+FROM golang:1.23.4-alpine AS builder
 
 WORKDIR /app
 
-# Копируем go.mod из backend
-COPY ./backend/go.mod .
+COPY go.mod .
 RUN go mod download
 
-# Копируем весь backend код
-COPY ./backend/ .
+COPY . .
 
-# Собираем
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/todo-service ./cmd/todo-service/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o todo-service ./cmd/todo-service/main.go
 
-# stage 2: run
 FROM alpine:latest
 WORKDIR /app
-COPY --from=build /bin/todo-service .
+COPY --from=builder /app/todo-service .
 EXPOSE 8080
-CMD [ "./todo-service" ]
+CMD ["./todo-service"]
