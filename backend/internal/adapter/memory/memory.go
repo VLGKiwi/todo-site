@@ -5,7 +5,7 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/FooxyS/todo-service/internal/domain"
+	"github.com/VLGKiwi/todo-site/backend/internal/domain"
 )
 
 type MemoryTodoRepository struct {
