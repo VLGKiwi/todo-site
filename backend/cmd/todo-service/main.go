@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/VLGKiwi/todo-site/backend/internal/adapter/memory"  // Твоя БД
-	"github.com/VLGKiwi/todo-site/backend/internal/controller/rest" // Твои контроллеры
-	"github.com/VLGKiwi/todo-site/backend/internal/usecase"         // Твои use cases
+	"github.com/VLGKiwi/todo-site/backend/internal/adapter/memory"
+	"github.com/VLGKiwi/todo-site/backend/internal/controller/rest"
+	"github.com/VLGKiwi/todo-site/backend/internal/usecase"
 )
 
 func main() {
