@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/FooxyS/todo-service/internal/domain"
+	"github.com/VLGKiwi/todo-site/backend/internal/domain"
 )
 
 func TestCreateTodo(t *testing.T) {

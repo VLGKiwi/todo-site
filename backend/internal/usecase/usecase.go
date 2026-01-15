@@ -5,7 +5,7 @@ import (
 
 	"context"
 
-	"github.com/FooxyS/todo-service/internal/domain"
+	"github.com/VLGKiwi/todo-site/backend/internal/domain"
 )
 
 type TodoRepository interface {
