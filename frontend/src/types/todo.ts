@@ -2,7 +2,7 @@ export type CreateTodoResponse = {
 	id: number
 }
 
-export type GetAllTodosResponse = Todo[]
+export type GetAllTodos = Todo[]
 
 export type Todo = {
 	id: number
