@@ -1,0 +1,28 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	background-color: rgb(31, 31, 31);
+
+	width: max-content;
+
+	padding: 25px 35px;
+
+	border-radius: 20px;
+
+	.title {
+		font-size: 18px;
+		line-height: 150%;
+	}
+
+	.description {
+		font-size: 14px;
+		line-height: 120%;
+	}
+
+	.complete {
+		font-size: 12px;
+		line-height: 120%;
+	}
+}
