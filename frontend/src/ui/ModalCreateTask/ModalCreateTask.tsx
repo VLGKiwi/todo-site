@@ -8,7 +8,6 @@ import styles from './ModalCreateTask.module.scss'
 import { Button } from '../Button/Button';
 import Image from 'next/image';
 import { useCreateTaskModalStore } from '@/stores/createTaskModalStore';
-import { error } from 'console';
 
 export const ModalCreateTask: FC<ModalCreateTaskProps> = ({isOpen}) => {
 
